@@ -1595,10 +1595,10 @@ show_floating_tool()
         shelf_button = cmds.shelfButton(
             parent=current_shelf,
             command=button_command,
-            annotation="Open Pie Menu",
-            label="Pie Menu",
+            annotation="Open Floating Tools",
+            label="Floating Tools",
             image="pythonFamily.png",
-            imageOverlayLabel="PIE",
+            imageOverlayLabel="FLT",
             overlayLabelColor=[1, 1, 1],
             overlayLabelBackColor=[0, 0, 0, 0],
             backgroundColor=[0.524, 0.195, 0.663],

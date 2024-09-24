@@ -157,11 +157,12 @@ class CustomButton(QtWidgets.QPushButton):
     doubleClicked = QtCore.Signal()
     rightClicked = QtCore.Signal(QtCore.QPoint)
 
-    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius=3, ContextMenu=False):
+    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius=3, ContextMenu=False, cmColor = '#00749a'):
         super().__init__(parent)
         self.setFlat(flat)
         self.base_color = color
         self.radius = radius
+        self.cmColor = cmColor
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.setStyleSheet(self.get_style_sheet(color, flat, radius))
         
@@ -246,21 +247,21 @@ class CustomButton(QtWidgets.QPushButton):
         if self.context_menu:
             self.context_menu.setWindowFlags(self.context_menu.windowFlags() | QtCore.Qt.FramelessWindowHint | QtCore.Qt.NoDropShadowWindowHint)
             self.context_menu.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-            self.context_menu.setStyleSheet('''
-                QMenu {
+            self.context_menu.setStyleSheet(f'''
+                QMenu {{
                     background-color: rgba(30, 30, 30, .7);
                     border-radius: 3px;
                     padding:  4px 5px;
-                }
-                QMenu::item {
-                    background-color: #00749a;
+                }}
+                QMenu::item {{
+                    background-color: {self.cmColor};
                     padding: 3px 20px 3px 5px;
                     margin: 3px 0px;
                     border-radius: 3px;
-                }
-                QMenu::item:selected {
+                }}
+                QMenu::item:selected {{
                     background-color: #00ade6;
-                }''')
+                }}''')
             self.context_menu.exec_(self.mapToGlobal(pos))
     #--------------------------------------------------------------------------------------------------------
     def mousePressEvent(self, event):
@@ -762,7 +763,8 @@ class FloatingTools(QtWidgets.QWidget):
         self.mainLayout_col.addLayout(self.toggle_col)
 
         self.toggle_col.addSpacing(5)
-        self.toggle_minimize_button = CustomButton(icon=":eye.png", size=20, color='rgba(50, 50, 50,.5)', tooltip="Maximize/Minimize", radius=10)
+        self.toggle_minimize_button = CustomButton(icon=":eye.png", size=20, color='rgba(50, 50, 50,.5)', tooltip="Maximize/Minimize", radius=10,ContextMenu=True,cmColor='#c42b1c')
+        self.toggle_minimize_button.addToMenu('Close',self.close)
         self.toggle_minimize_button.clicked.connect(self.toggle_minimize)
         self.toggle_col.addWidget(self.toggle_minimize_button)
 

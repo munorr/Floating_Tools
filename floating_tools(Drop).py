@@ -150,56 +150,25 @@ def create_curve(object_name, object_data):
 circle_18_shape = {"shapes": [{"pos_vectors":[[1.0,0.0,0.0],[0.939693,0.34202,0.0],[0.766044,0.642788,0.0],[0.5,0.866025,0.0],[0.173648,0.984808,0.0],[-0.173648,0.984808,0.0],[-0.5,0.866025,0.0],[-0.766044,0.642788,0.0],[-0.939693,0.34202,0.0],[-1.0,0.0,0.0],[-0.939693,-0.34202,0.0],[-0.766044,-0.642788,0.0],[-0.5,-0.866025,0.0],[-0.173648,-0.984808,0.0],[0.173648,-0.984808,0.0],[0.5,-0.866025,0.0],[0.766044,-0.642788,0.0],[0.939693,-0.34202,0.0],[1.0,0.0,0.0]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0],"form":0,"offset":[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,1.195995,1.0]}]}
 square_shape  = {"shapes": [{"pos_vectors":[[1.0,1.0,0.0],[-1.0,1.0,0.0],[-1.0,-1.0,0.0],[1.0,-1.0,0.0],[1.0,1.0,0.0]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0],"form":0,"offset":[1.0,0.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,-1.0,0.0,0.0,0.0,0.0,0.0,1.0]}]}
 cube_shape = {"shapes": [{"pos_vectors":[[-5.150279,5.150279,5.150279],[-5.150279,5.150279,-5.150279],[5.150279,5.150279,-5.150279],[5.150279,5.150279,5.150279],[-5.150279,5.150279,5.150279],[-5.150279,-5.150279,5.150279],[-5.150279,-5.150279,-5.150279],[-5.150279,5.150279,-5.150279],[-5.150279,5.150279,5.150279],[-5.150279,-5.150279,5.150279],[5.150279,-5.150279,5.150279],[5.150279,5.150279,5.150279],[5.150279,5.150279,-5.150279],[5.150279,-5.150279,-5.150279],[5.150279,-5.150279,5.150279],[5.150279,-5.150279,-5.150279],[-5.150279,-5.150279,-5.150279]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0],"form":0,"offset":[0.205628,0.0,0.0,0.0,0.0,0.205628,0.0,0.0,0.0,0.0,0.205628,0.0,0.0,0.0,0.0,1.0]}]}
-triangle_shape = {"shapes": [{"pos_vectors":[[0.0,0.369752,-0.369752],[0.0,-0.369752,-0.369752],[0.0,0.0,0.369752],[0.0,0.369752,-0.369752]],"degree":1,"knots":[0.0,1.0,2.0,3.0],"form":0,"offset":[2.874707,0.0,0.0,0.0,0.0,2.874707,0.0,0.0,0.0,0.0,2.874707,0.0,0.0,0.0,0.0,1.0]}]}
+triangle_shape = {"shapes": [{"pos_vectors":[[-1.062929,-0.0,1.062929],[1.062929,-0.0,1.062929],[0.0,0.0,-1.062929],[-1.062929,-0.0,1.062929]],"degree":1,"knots":[0.0,1.0,2.0,3.0],"form":0,"offset":[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]}]}
 pyramid_shape = {"shapes": [{"pos_vectors":[[-0.738213,-0.0,-0.738213],[0.738213,-0.0,-0.738213],[0.738213,-0.0,0.738213],[-0.738213,-0.0,0.738213],[-0.738213,-0.0,-0.738213],[-0.0,1.539523,-0.0],[0.738213,-0.0,-0.738213],[0.738213,-0.0,0.738213],[-0.0,1.539523,-0.0],[-0.738213,-0.0,0.738213],[-0.738213,-0.0,-0.738213],[-0.0,1.539523,-0.0],[0.738213,-0.0,-0.738213]],"degree":1,"knots":[0.0,4.0,8.0,12.0,16.0,24.485,32.97,36.97,45.455,53.941,57.941,66.426,74.911],"form":0,"offset":[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]}]}
 arrow_shape = {"shapes": [{"pos_vectors":[[-0.418175,-1.25,0.0],[-0.418175,-0.25,0.0],[-1.0,-0.25,0.0],[0.0,1.25,0.0],[1.0,-0.25,0.0],[0.418175,-0.25,0.0],[0.418175,-1.25,0.0],[-0.418175,-1.25,0.0]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0],"form":0,"offset":[1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0,0.0,0.0,0.0,0.0,1.0]}]}
 cycle_shape = {"shapes": [{"pos_vectors":[[1.821412,-0.0,3.228411],[2.575865,-0.0,2.649498],[3.154778,-0.0,1.895045],[3.518698,-0.0,1.016465],[3.642823,-0.0,0.073633],[3.518698,-0.0,-0.8692],[3.154777,-0.0,-1.74778],[2.575865,-0.0,-2.502233],[1.821411,-0.0,-3.081145],[1.421608,-0.0,-2.462164],[0.717669,-0.0,-4.559907],[0.720485,-0.0,-4.567671],[2.786863,-0.0,-4.843799],[2.45964,-0.0,-4.18659],[3.478457,-0.0,-3.404825],[4.260222,-0.0,-2.386008],[4.75166,-0.0,-1.199571],[4.919281,-0.0,0.073632],[4.751661,-0.0,1.346836],[4.260222,-0.0,2.533273],[3.478457,-0.0,3.55209],[2.459641,-0.0,4.333856],[2.459641,-0.0,4.333856],[2.459641,-0.0,4.333856],[2.459641,-0.0,4.333856]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0,19.0,20.0,21.0,22.0,23.0,24.0],"form":2,"offset":[0.329236,0.0,0.0,0.0,0.0,0.329236,0.0,0.0,0.0,0.0,0.329236,0.0,0.0,0.0,0.0,1.0]},
                           {"pos_vectors":[[-1.821412,-0.0,3.228411],[-1.540693,-0.0,2.763896],[-0.698641,-0.0,4.568377],[-0.702549,-0.0,4.57625],[-2.736469,-0.0,4.843799],[-2.459641,-0.0,4.333856],[-3.478457,-0.0,3.55209],[-4.260222,-0.0,2.533273],[-4.751661,-0.0,1.346836],[-4.919281,-0.0,0.073632],[-4.75166,-0.0,-1.199571],[-4.260222,-0.0,-2.386008],[-3.478457,-0.0,-3.404825],[-2.45964,-0.0,-4.18659],[-1.821411,-0.0,-3.081145],[-2.575865,-0.0,-2.502233],[-3.154777,-0.0,-1.74778],[-3.518698,-0.0,-0.8692],[-3.642823,-0.0,0.073633],[-3.518698,-0.0,1.016465],[-3.154778,-0.0,1.895045],[-2.575865,-0.0,2.649498],[-2.575865,-0.0,2.649498],[-2.575865,-0.0,2.649498],[-2.575865,-0.0,2.649498]],"degree":1,"knots":[0.0,1.0,2.0,3.0,4.0,5.0,6.0,7.0,8.0,9.0,10.0,11.0,12.0,13.0,14.0,15.0,16.0,17.0,18.0,19.0,20.0,21.0,22.0,23.0,24.0],"form":2,"offset":[0.329236,0.0,0.0,0.0,0.0,0.329236,0.0,0.0,0.0,0.0,0.329236,0.0,0.0,0.0,0.0,1.0]}]}
 
 #----------------------------------------------------------------------------------------------------------------
-class DoubleClickButton(QtWidgets.QPushButton):
+class CustomButton(QtWidgets.QPushButton):
     singleClicked = QtCore.Signal()
     doubleClicked = QtCore.Signal()
+    rightClicked = QtCore.Signal(QtCore.QPoint)
 
-    def __init__(self, *args, **kwargs):
-        super(DoubleClickButton, self).__init__(*args, **kwargs)
-        self.timer = QtCore.QTimer(self)
-        self.timer.setSingleShot(True)
-        self.timer.timeout.connect(self.performSingleClick)
-        self.click_count = 0
-
-    def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            self.click_count += 1
-            if not self.timer.isActive():
-                self.timer.start(300)
-        super(DoubleClickButton, self).mousePressEvent(event)
-
-    def mouseReleaseEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            if self.click_count == 2:
-                self.timer.stop()
-                self.click_count = 0
-                self.doubleClicked.emit()
-        super(DoubleClickButton, self).mouseReleaseEvent(event)
-
-    def performSingleClick(self):
-        if self.click_count == 1:
-            self.singleClicked.emit()
-        self.click_count = 0
-
-class CustomButton(DoubleClickButton):
-    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius = 3):
+    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius=3, ContextMenu=False):
         super().__init__(parent)
         self.setFlat(flat)
+        self.base_color = color
+        self.radius = radius
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        if flat:
-            self.setStyleSheet(f"background-color: transparent;")
-        else:
-            self.setStyleSheet(f'''QPushButton{{background-color: {color};border-radius: {radius}px;}}
-                                    QPushButton:hover {{background-color: {hex_value(color, 1.2)} ;}}
-                                    QPushButton:pressed  {{background-color: {hex_value(color, 0.8)} ;}}
-                                    QToolTip {{background-color: {color};color: white; border:0px;}}''')
+        self.setStyleSheet(self.get_style_sheet(color, flat, radius))
         
         icon_size = size if size else 24
         
@@ -213,32 +182,121 @@ class CustomButton(DoubleClickButton):
                 self.setFixedHeight(24)
             if width is None:
                 if icon:
-                    # If both icon and text are present, add some padding
                     self.setMinimumWidth(self.calculate_button_width(text, padding=30))
-                    self.setStyleSheet(self.styleSheet() + " QPushButton {{ text-align: right; padding-right: 10px; }}")
+                    self.setStyleSheet(self.styleSheet() + " QPushButton { text-align: right; padding-right: 10px; }")
                 else:
                     self.setMinimumWidth(self.calculate_button_width(text))
         elif icon and (width is None or height is None):
-            # If only icon is present and width or height is not specified
             self.setFixedSize(icon_size, icon_size)
         
-        # Set custom width and height if provided
         if width is not None:
             self.setFixedWidth(width)
         if height is not None:
             self.setFixedHeight(height)
         
         if icon and text:
-            # Set icon to the left of the text
             self.setLayoutDirection(QtCore.Qt.LeftToRight)
         
         self.setToolTip(f"<html><body><p style='color:white; white-space:nowrap; '>{tooltip}</p></body></html>")
+        
+        self.context_menu = None
+        if ContextMenu:
+            self.context_menu = QtWidgets.QMenu(self)
+            self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+            self.customContextMenuRequested.connect(self.show_context_menu)
 
+        self.timer = QtCore.QTimer(self)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.performSingleClick)
+        self.click_count = 0
+        self.reset_button_state()
+
+        #--------------------------------------------------------------------------------------------------------
+    def get_style_sheet(self, color, flat, radius):
+        if flat:
+            return "background-color: transparent;"
+        else:
+            return f'''
+                QPushButton {{
+                    background-color: {color};
+                    color: white;
+                    border: none;
+                    padding: 5px;
+                    border-radius: {radius}px;
+                }}
+                QPushButton:hover {{
+                    background-color: {hex_value(color, 1.2)};
+                }}
+                QPushButton:pressed {{
+                    background-color: {hex_value(color, 0.8)};
+                }}
+                QToolTip {{
+                    background-color: {color};
+                    color: white;
+                    border: 0px;
+                }}
+            '''
+        
     def calculate_button_width(self, text, padding=20):
         font_metrics = QtGui.QFontMetrics(QtWidgets.QApplication.font())
         text_width = font_metrics.horizontalAdvance(text)
         return text_width + padding
-    
+
+    def addToMenu(self, name, function):
+        if self.context_menu:
+            action = self.context_menu.addAction(name)
+            action.triggered.connect(function)
+
+    def show_context_menu(self, pos):
+        if self.context_menu:
+            self.context_menu.setWindowFlags(self.context_menu.windowFlags() | QtCore.Qt.FramelessWindowHint | QtCore.Qt.NoDropShadowWindowHint)
+            self.context_menu.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+            self.context_menu.setStyleSheet('''
+                QMenu {
+                    background-color: rgba(30, 30, 30, .7);
+                    border-radius: 3px;
+                    padding:  4px 5px;
+                }
+                QMenu::item {
+                    background-color: #00749a;
+                    padding: 3px 20px 3px 5px;
+                    margin: 3px 0px;
+                    border-radius: 3px;
+                }
+                QMenu::item:selected {
+                    background-color: #00ade6;
+                }''')
+            self.context_menu.exec_(self.mapToGlobal(pos))
+    #--------------------------------------------------------------------------------------------------------
+    def mousePressEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            self.click_count += 1
+            if not self.timer.isActive():
+                self.timer.start(300)
+        elif event.button() == QtCore.Qt.RightButton:
+            self.rightClicked.emit(event.pos())
+        super(CustomButton, self).mousePressEvent(event)
+
+    def mouseReleaseEvent(self, event):
+        if event.button() == QtCore.Qt.LeftButton:
+            if self.click_count == 2:
+                self.timer.stop()
+                self.click_count = 0
+                self.doubleClicked.emit()
+        super(CustomButton, self).mouseReleaseEvent(event)
+
+    def performSingleClick(self):
+        if self.click_count == 1:
+            self.singleClicked.emit()
+        self.click_count = 0
+
+    def leaveEvent(self, event):
+        self.reset_button_state()
+        super(CustomButton, self).leaveEvent(event)
+
+    def reset_button_state(self):
+        self.setStyleSheet(self.get_style_sheet(self.base_color, self.isFlat(), self.radius))
+
 class CustomFrame(QtWidgets.QFrame):
     def __init__(self, 
                     height=None, 
@@ -384,7 +442,10 @@ class FloatingTools(QtWidgets.QWidget):
         parent_constraint_button = CustomButton(icon=':parentConstraint.png', color='transparent', tooltip="Constraint active object to selected object.")
         centerPivot_button = CustomButton(icon=':CenterPivot.png', color='transparent', tooltip="Resets the selected object(s) pivot to the center.")
         deleteHistory_button = CustomButton(icon=':DeleteHistory.png', color='transparent', tooltip="Delete construction history on selected object(s).")
-        freezeTransform_button = CustomButton(icon=':FreezeTransform.png', color='transparent', tooltip="Changes curent transform values to base transform values.")
+        freezeTransform_button = CustomButton(icon=':FreezeTransform.png', color='transparent', tooltip="Changes curent transform values to base transform values.",ContextMenu=True)
+        freezeTransform_button.addToMenu("Freeze Translate", self.freeze_translate)
+        freezeTransform_button.addToMenu("Freeze Rotate", self.freeze_rotate)
+        freezeTransform_button.addToMenu("Freeze Scale", self.freeze_scale)
         object_to_world_button = CustomButton(icon=':absolute.png', color='#4d4d4d', size=22, tooltip="Object to world Origin: Moves object to world origin.")
         active_to_selected_button = CustomButton(icon=':absolute.png', color='#C41B16', size=22, tooltip="Snap to Active Object: Moves selected object(s) to Active Objects Position.")
         pivot_to_world_button = CustomButton(icon=':absolute.png', color='#049E9F', size=22, tooltip="Pivot to Stored Position: Moves the object(s) Stored Position.")
@@ -912,10 +973,16 @@ class FloatingTools(QtWidgets.QWidget):
         mel.eval('''DeleteHistory;''')
     
     def freeze_transformation(self):
-        mel.eval('''
-                    FreezeTransformations;
-                    makeIdentity -apply true -t 1 -r 1 -s 1 -n 0 -pn 1;
-                 ''')
+        cmds.makeIdentity(apply=True, translate=True, rotate=True, scale=True, normal=False, preserveNormals=True)
+    
+    def freeze_translate(self):
+        cmds.makeIdentity(apply=True, translate=True, rotate=False, scale=False, normal=False, preserveNormals=True)
+    
+    def freeze_rotate(self):
+        cmds.makeIdentity(apply=True, translate=False, rotate=True, scale=False, normal=False, preserveNormals=True)
+    
+    def freeze_scale(self):
+        cmds.makeIdentity(apply=True, translate=False, rotate=False, scale=True, normal=False, preserveNormals=True)
     
     def object_to_world_origin(self):
         mel.eval('''
@@ -1316,7 +1383,7 @@ class FloatingTools(QtWidgets.QWidget):
 
         for ctrl_obj in selection:
             # Get the short name of the control object for naming the group
-            ctrl_short_name = cmds.ls(ctrl_obj, shortNames=True)[0]
+            ctrl_short_name = ctrl_obj.split('|')[-1]
             grp1_name = f"{ctrl_short_name}_offset"
             #grp2_name = f"{ctrl_short_name}_xform"
             #grp3_name = f"{ctrl_short_name}_topGrp"

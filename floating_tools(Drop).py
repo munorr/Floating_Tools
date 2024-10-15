@@ -7,11 +7,18 @@ import maya.cmds as cmds
 import maya.mel as mel
 import maya.api.OpenMaya as om
 from maya import OpenMayaUI as omui
-from PySide2 import QtWidgets, QtCore, QtGui
-from PySide2.QtGui import QColor
-from PySide2.QtCore import QTimer, QPropertyAnimation, QEasingCurve
-from shiboken2 import wrapInstance
 from functools import wraps
+
+try:
+    from PySide6 import QtWidgets, QtCore, QtGui
+    from PySide6.QtGui import QColor
+    from PySide6.QtCore import QTimer, QPropertyAnimation, QEasingCurve
+    from shiboken6 import wrapInstance
+except ImportError:
+    from PySide2 import QtWidgets, QtCore, QtGui
+    from PySide2.QtGui import QColor
+    from PySide2.QtCore import QTimer, QPropertyAnimation, QEasingCurve
+    from shiboken2 import wrapInstance
 
 
 def maya_main_window():
@@ -162,12 +169,13 @@ class CustomButton(QtWidgets.QPushButton):
     doubleClicked = QtCore.Signal()
     rightClicked = QtCore.Signal(QtCore.QPoint)
 
-    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius=3, ContextMenu=False, cmColor = '#00749a'):
+    def __init__(self, text='', icon=None, color='#4d4d4d', tooltip='', flat=False, size=None, width=None, height=None, parent=None, radius=3, ContextMenu=False, cmColor='#00749a', onlyContext=False):
         super().__init__(parent)
         self.setFlat(flat)
         self.base_color = color
         self.radius = radius
         self.cmColor = cmColor
+        self.onlyContext = onlyContext
         self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.setStyleSheet(self.get_style_sheet(color, flat, radius))
         
@@ -201,7 +209,7 @@ class CustomButton(QtWidgets.QPushButton):
         self.setToolTip(f"<html><body><p style='color:white; white-space:nowrap; '>{tooltip}</p></body></html>")
         
         self.context_menu = None
-        if ContextMenu:
+        if ContextMenu or onlyContext:
             self.context_menu = QtWidgets.QMenu(self)
             self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
             self.customContextMenuRequested.connect(self.show_context_menu)
@@ -268,35 +276,49 @@ class CustomButton(QtWidgets.QPushButton):
                     background-color: #00ade6;
                 }}''')
             self.context_menu.exec_(self.mapToGlobal(pos))
+            
+        
     #--------------------------------------------------------------------------------------------------------
     def mousePressEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            self.click_count += 1
-            if not self.timer.isActive():
-                self.timer.start(300)
-        elif event.button() == QtCore.Qt.RightButton:
-            self.rightClicked.emit(event.pos())
+        if self.onlyContext:
+            if event.button() in (QtCore.Qt.LeftButton, QtCore.Qt.RightButton):
+                self.show_context_menu(event.pos())
+        else:
+            if event.button() == QtCore.Qt.LeftButton:
+                self.click_count += 1
+                if not self.timer.isActive():
+                    self.timer.start(300)
+            elif event.button() == QtCore.Qt.RightButton:
+                self.rightClicked.emit(event.pos())
         super(CustomButton, self).mousePressEvent(event)
+        maya_main_window().activateWindow()
+        
+        
 
     def mouseReleaseEvent(self, event):
-        if event.button() == QtCore.Qt.LeftButton:
-            if self.click_count == 2:
-                self.timer.stop()
-                self.click_count = 0
-                self.doubleClicked.emit()
+        if not self.onlyContext:
+            if event.button() == QtCore.Qt.LeftButton:
+                if self.click_count == 2:
+                    self.timer.stop()
+                    self.click_count = 0
+                    self.doubleClicked.emit()
         super(CustomButton, self).mouseReleaseEvent(event)
+        
 
     def performSingleClick(self):
-        if self.click_count == 1:
-            self.singleClicked.emit()
+        if not self.onlyContext:
+            if self.click_count == 1:
+                self.singleClicked.emit()
         self.click_count = 0
 
     def leaveEvent(self, event):
         self.reset_button_state()
         super(CustomButton, self).leaveEvent(event)
+        
 
     def reset_button_state(self):
         self.setStyleSheet(self.get_style_sheet(self.base_color, self.isFlat(), self.radius))
+
 
 class CustomFrame(QtWidgets.QFrame):
     def __init__(self, 
@@ -349,6 +371,7 @@ class ToggleButton(QtWidgets.QPushButton):
 
     def on_toggle(self, checked):
         self.toggled_with_id.emit(checked, self.button_id)
+        #maya_main_window().activateWindow()
 
 class FloatingTools(QtWidgets.QWidget):
     def __init__(self, parent=None):
@@ -365,14 +388,14 @@ class FloatingTools(QtWidgets.QWidget):
         self.mainLayout.addLayout(self.mainLayout_col)
         self.mainLayout_col.setAlignment(QtCore.Qt.AlignRight)
 
-        frameColSpacer = QtWidgets.QHBoxLayout()
+        self.frameColSpacer = QtWidgets.QHBoxLayout()
 
         self.frame_col = QtWidgets.QVBoxLayout()
-        self.frame_col.setAlignment(QtCore.Qt.AlignCenter)
+        self.frame_col.setAlignment(QtCore.Qt.AlignRight)
 
-        frameColSpacer.addStretch()
-        frameColSpacer.addLayout(self.frame_col)
-        self.mainLayout_col.addLayout(frameColSpacer)
+        self.frameColSpacer.addStretch()
+        self.frameColSpacer.addLayout(self.frame_col)
+        self.mainLayout_col.addLayout(self.frameColSpacer)
 
         self.is_minimized = False
         self.setup_ui()  
@@ -394,12 +417,14 @@ class FloatingTools(QtWidgets.QWidget):
         self.customContextMenuRequested.connect(self.show_frame_context_menu)
         self.fade_away_enabled = False
 
+        self.context_menu_open = False
+
     #---------------------------------------------------------------------------------------------------------------
     def setup_ui(self):
         frameWidth = 280
 
         def frameStyleSheet(frame):
-            frame.setStyleSheet(f'''QFrame {{ border: 0px solid gray; border-radius: 5px; background-color: rgba(40, 40, 40, .6); }}''')
+            frame.setStyleSheet(f'''QFrame {{ border: 0px solid gray; border-radius: 4px; background-color: rgba(40, 40, 40, .6); }}''')
 
         def mrs(col):
             reset_move_button = CustomButton(text='Move', icon=':delete.png', color='#262626', size=16, tooltip="Resets the moved object values to Origin.")
@@ -631,58 +656,67 @@ class FloatingTools(QtWidgets.QWidget):
         self.menu_frame_2.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.menu_frame_2.setFixedWidth(frameWidth)
         frameStyleSheet(self.menu_frame_2)
+
+        cs = 6
         menu_frame_layout_2 = QtWidgets.QVBoxLayout(self.menu_frame_2)
         menu_frame_layout_2.setContentsMargins(fs, fs, fs, fs)
-        menu_frame_layout_2.setSpacing(7)
+        menu_frame_layout_2.setSpacing(cs)
         self.frame_col.addWidget(self.menu_frame_2)
         frame2_col1 = QtWidgets.QHBoxLayout()
-        frame2_col1.setSpacing(7)
+        frame2_col1.setSpacing(fs)
         frame2_col2 = QtWidgets.QHBoxLayout()
-        frame2_col2.setSpacing(7)
+        frame2_col2.setSpacing(cs)
         frame2_col3 = QtWidgets.QHBoxLayout()
-        frame2_col3.setSpacing(7)
+        frame2_col3.setSpacing(cs)
         frame2_col4 = QtWidgets.QHBoxLayout()
-        frame2_col4.setSpacing(7)
+        frame2_col4.setSpacing(cs)
         frame2_col2_frame = QtWidgets.QFrame()
         frame2_col2_frame.setStyleSheet(f'''QFrame {{ border: 0px solid gray; border-radius: 5px; background-color: rgba(30, 30, 30, .75); }}''')
         frame2_col2_col = QtWidgets.QVBoxLayout(frame2_col2_frame)
         
         
-        frame2_col2_col.setContentsMargins(7, 7, 7, 7)
-        frame2_col2_col.setSpacing(7)
+        frame2_col2_col.setContentsMargins(cs, cs, cs, cs)
+        frame2_col2_col.setSpacing(cs)
         
         mrs(frame2_col1)
 
         buttons = [
             CustomButton(text='Key', color='#d62e22', tooltip="Sets key frame."),
             CustomButton(text='Key', color='#3fb07f', tooltip="Sets breakdown frame."),
-            CustomButton(text='Mute all', color='#8c805a', tooltip="Mutes all the animation of selected objects."),
-            CustomButton(text='Unmute all', color='#696969', tooltip="Unmutes all the animation of selected objects."),
+            
             CustomButton(text='Copy', color='#293F64', tooltip="Copy selected key(s)."),
             CustomButton(text='Paste', color='#1699CA', tooltip="Paste copied key(s)."),
             CustomButton(text='Paste Inverse', color='#9416CA', tooltip="Paste Inverted copied keys(s)."),
-            CustomButton(text='<', color='#7B945D', width=22, tooltip="Remove Inbetween at current time."),
-            CustomButton(text='>', color='#7B945D', width=22, tooltip="Add Inbetween at current time."),
+            CustomButton(text='<', color='#496d88', width=24, tooltip="Remove Inbetween at current time."),
+            CustomButton(text='>', color='#496d88', width=24, tooltip="Add Inbetween at current time."),
             CustomButton(text='Delete Key', color='#A00000', size=16, tooltip="Deletes keys from the given start frame to the current frame."),
         ]
-
+        #CustomButton(text='Mute all', color='#8c805a', tooltip="Mutes all the animation of selected objects."),
+        #CustomButton(text='Unmute all', color='#696969', tooltip="Unmutes all the animation of selected objects."),
         for button in buttons[:4]:
             frame2_col2.addWidget(button)
-        for button in buttons[4:7]:
+        for button in buttons[4:]:
             frame2_col3.addWidget(button)
-        for button in buttons[7:]:
-            frame2_col4.addWidget(button)
+        anim_extra = CustomButton(icon=':moreOverlay.png', color='#444444', tooltip="More Options.",ContextMenu=True, onlyContext=True,cmColor='#5285a6')
+        anim_extra.addToMenu("Mute All", self.mute_all)
+        anim_extra.addToMenu("Unmute All", self.unMute_all)
+        anim_extra.addToMenu("Mute Selected", self.mute_selected)
+        anim_extra.addToMenu("Unmute Selected", self.unMute_selected)
+        anim_extra.addToMenu("Break Connections", self.break_connections)
+        frame2_col3.addWidget(anim_extra)
+        #for button in buttons[7:]:
+        #    frame2_col4.addWidget(button)
 
         buttons[0].singleClicked.connect(self.set_key)
         buttons[1].singleClicked.connect(self.set_breakdown)
-        buttons[2].singleClicked.connect(self.mute_all)
-        buttons[3].singleClicked.connect(self.unMute_all)
-        buttons[4].singleClicked.connect(self.copy_keys)
-        buttons[5].singleClicked.connect(self.paste_keys)
-        buttons[6].singleClicked.connect(self.paste_inverse)
-        buttons[7].singleClicked.connect(self.remove_inbetweens)
-        buttons[8].singleClicked.connect(self.add_inbetweens)
-        buttons[9].singleClicked.connect(self.delete_keys)
+        #buttons[2].singleClicked.connect(self.mute_all)
+        #buttons[3].singleClicked.connect(self.unMute_all)
+        buttons[2].singleClicked.connect(self.copy_keys)
+        buttons[3].singleClicked.connect(self.paste_keys)
+        buttons[4].singleClicked.connect(self.paste_inverse)
+        buttons[5].singleClicked.connect(self.remove_inbetweens)
+        buttons[6].singleClicked.connect(self.add_inbetweens)
+        buttons[7].singleClicked.connect(self.delete_keys)
 
         menu_frame_layout_2.addLayout(frame2_col1)
         frame2_col2_col.addLayout(frame2_col2)
@@ -690,10 +724,53 @@ class FloatingTools(QtWidgets.QWidget):
         frame2_col2_col.addLayout(frame2_col4)
         menu_frame_layout_2.addWidget(frame2_col2_frame)
 
+        tl_button_col = QtWidgets.QHBoxLayout()
+        
+        #----------------------------------------------------------------------------------------------------------------------------------------
+        self.keytick_frame = QtWidgets.QFrame()
+        self.keytick_frame.setStyleSheet(f'''QFrame {{ border: 0px solid gray; border-radius: 4px; background-color: rgba(40, 40, 40, .6); }}''')
+        self.keytick_frame.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.keytick_frame.setFixedWidth(frameWidth)
+        fs = 7
+        keytick_frame_layout = QtWidgets.QHBoxLayout(self.keytick_frame)
+        keytick_frame_layout.setContentsMargins(fs, fs, fs, fs)
+        keytick_frame_layout.setSpacing(fs)
+
+        #self.frame_col.addWidget(self.keytick_frame)
+
+        #frame2_col1.addWidget(keytick_frame)
+        self.radio_group = QtWidgets.QButtonGroup(self)
+        
+        options = ["None", "Active", "Channel Box", "Smart"]
+        for i, option in enumerate(options):
+            radio = QtWidgets.QRadioButton(option)
+            radio.setStyleSheet(f'''
+                QRadioButton::indicator:unchecked {{background-color: #555555; border: 0px solid #555555; border-radius: 3px;}}
+                QRadioButton::indicator:checked {{background-color: #5285a6; border: 0px solid #5285a6; border-radius: 3px;}}
+                QRadioButton::indicator:hover {{background-color: #6a6a6a;}}
+                QRadioButton::indicator:checked:hover {{background-color: #62a0c7;}}
+                QToolTip{{background-color: {'#5285a6' if self.get_keytick()[1] == option else '#555555'}; color: white; border: 0px;}}
+            ''')
+            tooltip_text = f'Change Keytick to <b>{option}</b>' if self.get_keytick()[1] != option else f'Current Keytick is <b>{option}</b>'
+            radio.setToolTip(f'<div style="white-space: nowrap;">{tooltip_text}</div>')
+            self.radio_group.addButton(radio, i)
+            
+            keytick_frame_layout.addWidget(radio)
+
+        self.radio_group.buttonClicked.connect(self.keytick_toggle_option)
+
+        current_setting = self.get_keytick()[0]
+        self.set_current_option(current_setting)
+        #-------------------------------------------------------------------------------------------------------------------------------------    
+        tl_button_col.addStretch()
+        tl_button_col.addWidget(self.keytick_frame)  
+        self.frame_col.addLayout(tl_button_col)  
+
         self.frame2_label = QtWidgets.QLabel('Timeline Tools')
-        self.frame2_label.setStyleSheet(f'''QLabel {{ color:rgba(160, 160, 160, .5) }}''')
-        self.frame_col.addWidget(self.frame2_label)        
+        self.frame2_label.setStyleSheet(f'''QLabel {{ color:rgba(160, 160, 160, .5) }}''')  
+        self.frame_col.addWidget(self.frame2_label)   
         #==========================================================================================================================================
+        
         mf3Spacer = QtWidgets.QHBoxLayout()
         self.menu_frame_3 = QtWidgets.QFrame()
         self.menu_frame_3.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -767,6 +844,8 @@ class FloatingTools(QtWidgets.QWidget):
         self.toggle_col.setSpacing(4)
         self.mainLayout_col.addLayout(self.toggle_col)
 
+        #self.mainLayout_col.addStretch()
+        
         self.toggle_col.addSpacing(5)
         self.toggle_minimize_button = CustomButton(icon=":eye.png", size=20, color='rgba(50, 50, 50,.5)', tooltip="Maximize/Minimize", radius=10,ContextMenu=True,cmColor='#c42b1c')
         self.toggle_minimize_button.addToMenu('Close',self.close)
@@ -823,6 +902,7 @@ class FloatingTools(QtWidgets.QWidget):
             self.orientFrame.hide()
             self.shapeFrame.hide()
             self.menu_frame_2.hide()
+            self.keytick_frame.hide()
             self.menu_frame_3.hide()
             self.toggle_button_1.hide()
             self.toggle_button_2.hide()
@@ -847,6 +927,7 @@ class FloatingTools(QtWidgets.QWidget):
             self.moreTools1.setVisible(self.toggle_button_1.isChecked())
 
             self.menu_frame_2.setVisible(self.toggle_button_2.isChecked())
+            self.keytick_frame.setVisible(self.toggle_button_2.isChecked())
             self.frame2_label.setVisible(self.toggle_button_2.isChecked())
 
             self.menu_frame_3.setVisible(self.toggle_button_3.isChecked())
@@ -856,7 +937,7 @@ class FloatingTools(QtWidgets.QWidget):
             self.toggle_button_2.show()
             self.toggle_button_3.show()
             self.minimized_frame.hide()
-        #maya_main_window().activateWindow()
+        maya_main_window().activateWindow()
     
     def update_toggle(self, checked, button_id):
         if checked:
@@ -866,6 +947,7 @@ class FloatingTools(QtWidgets.QWidget):
             self.update_frame_visibility()
     
     def show_frame_context_menu(self, pos):
+        self.context_menu_open = True
         menu = QtWidgets.QMenu(self)
         # Remove background and shadow
         menu.setWindowFlags(menu.windowFlags() | QtCore.Qt.FramelessWindowHint | QtCore.Qt.NoDropShadowWindowHint)
@@ -892,6 +974,9 @@ class FloatingTools(QtWidgets.QWidget):
         toggle_fade_action.setChecked(self.fade_away_enabled)
         
         action = menu.exec_(self.mapToGlobal(pos))
+        self.context_menu_open = False
+        if self.fade_away_enabled:
+            self.fade_timer.start(10)
         if action == toggle_fade_action:
             self.toggle_fade_away()
 
@@ -914,6 +999,7 @@ class FloatingTools(QtWidgets.QWidget):
         if event.button() == QtCore.Qt.LeftButton:
             self.drag_position = event.globalPos() - self.frameGeometry().topLeft()
             event.accept()
+        maya_main_window().activateWindow()
 
     def mouseMoveEvent(self, event):
         if event.buttons() == QtCore.Qt.LeftButton:
@@ -931,15 +1017,15 @@ class FloatingTools(QtWidgets.QWidget):
         super(FloatingTools, self).enterEvent(event)
 
     def leaveEvent(self, event):
-        if self.fade_away_enabled:
-            self.fade_timer.start(1000)  # 1000ms delay before fade out
+        if self.fade_away_enabled and not self.context_menu_open:
+            self.fade_timer.start(10)  # 1000ms delay before fade out
         super(FloatingTools, self).leaveEvent(event)
 
     def start_fade_animation(self):
-        if self.fade_away_enabled:
-            self.fade_animation.setDuration(1000)  # 1000ms for fade out
+        if self.fade_away_enabled and not self.context_menu_open:
+            self.fade_animation.setDuration(400)  # 1000ms for fade out
             self.fade_animation.setStartValue(self.windowOpacity())
-            self.fade_animation.setEndValue(0.2)
+            self.fade_animation.setEndValue(0.1)
             self.fade_animation.start()
     #---------------------------------------------------------------------------------------------------------------
     def circle_sc(self):
@@ -957,7 +1043,63 @@ class FloatingTools(QtWidgets.QWidget):
         create_curve('arrow',arrow_shape)
     def cycle_sc(self):
         create_curve('cycle',cycle_shape)
-    #----------------------------------------------------------------------------------------------------------------
+    
+    #-------------------------------------------------------------------------------------------------------------------------------------
+    def get_keytick(self):
+        check_none = True if mel.eval('timeControl -q -showKeys $gPlayBackSlider;') == 'none' else False
+        check_active = True if mel.eval('timeControl -q -showKeys $gPlayBackSlider;') == 'active' else False
+        s_checker = mel.eval('timeControl -q -showKeysCombined $gPlayBackSlider;')
+        check_channelBox = True if mel.eval('timeControl -q -showKeys $gPlayBackSlider;') == 'mainChannelBox' and s_checker == 0 else False
+        check_smart = True if s_checker == 1 else False
+
+        if check_none:
+            return 'none', 'None'
+        elif check_active:
+            return 'active', 'Active'
+        elif check_channelBox:
+            return 'channelBox', 'Channel Box'
+        elif check_smart:
+            return 'smart', 'Smart'
+
+    def set_current_option(self, option):
+        option_map = {'none': 0, 'active': 1, 'channelBox': 2, 'smart': 3}
+        if option in option_map:
+            self.radio_group.button(option_map[option]).setChecked(True)
+
+    def keytick_toggle_option(self, button):
+        selected_option = button.text()
+        print(f"Option changed to: {selected_option}")
+        
+        # Update tooltips for all radio buttons
+        for radio_button in self.radio_group.buttons():
+            if radio_button.text() == selected_option:
+                tooltip_text = f'Current Keytick is <b>{selected_option}</b>'
+            else:
+                tooltip_text = f'Change Keytick to <b>{radio_button.text()}</b>'
+            radio_button.setToolTip(f'<div style="white-space: nowrap;">{tooltip_text}</div>')
+            
+        # Update the button styles if needed
+        for radio_button in self.radio_group.buttons():
+            radio_button.setStyleSheet(f'''
+                QRadioButton::indicator:unchecked {{background-color: #555555; border: 0px solid #555555; border-radius: 3px;}}
+                QRadioButton::indicator:checked {{background-color: #5285a6; border: 0px solid #5285a6; border-radius: 3px;}}
+                QRadioButton::indicator:hover {{background-color: #6a6a6a;}}
+                QRadioButton::indicator:checked:hover {{background-color: #62a0c7;}}
+                QToolTip{{background-color: {'#5285a6' if radio_button.text() == selected_option else '#555555'}; color: white; border: 0px;}}
+            ''')
+            
+        option = button.text().lower().replace(' ', '')
+        if option == 'none':
+            mel.eval('timeControl -e -showKeys none $gPlayBackSlider;')
+        elif option == 'active':
+            mel.eval('timeControl -e -showKeys active $gPlayBackSlider;')
+        elif option == 'channelbox':
+            mel.eval('timeControl -e -showKeys $gChannelBoxName -showKeysCombined false $gPlayBackSlider;')
+        elif option == 'smart':
+            mel.eval('timeControl -e -showKeys $gChannelBoxName -showKeysCombined true $gPlayBackSlider;')
+        print(f"Selected option: {option}")
+    #-------------------------------------------------------------------------------------------------------------------------------------
+
     def rotate_object(self, x, y, z):
         increment = float(self.increment_input.text())
         selected_objects = cmds.ls(selection=True)
@@ -1468,38 +1610,6 @@ class FloatingTools(QtWidgets.QWidget):
     def set_breakdown(self):
         mel.eval("setKeyframe -breakdown 1 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;")
     
-    @undoable
-    def mute_all(self):
-        # Get the selected objects
-        selected_objects = cmds.ls(selection=True)
-
-        # Check if any objects are selected
-        if not selected_objects:
-            cmds.warning("No object selected!")
-        else:
-            # Mute the channel box controls for each selected object
-            for obj in selected_objects:
-                for attr in ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']:
-                    cmds.mute(f"{obj}.{attr}")
-
-            print("Transform attributes muted for selected objects.")
-    
-    @undoable
-    def unMute_all(self):
-        # Get the selected objects
-        selected_objects = cmds.ls(selection=True)
-
-        # Check if any objects are selected
-        if not selected_objects:
-            cmds.warning("No object selected!")
-        else:
-            # Unmute the channel box controls for each selected object
-            for obj in selected_objects:
-                for attr in ['tx', 'ty', 'tz', 'rx', 'ry', 'rz', 'sx', 'sy', 'sz']:
-                    cmds.mute(f"{obj}.{attr}", disable=True, force=True)
-
-            print("Transform attributes unmuted for selected objects.")
-
     def insert_key(self):
         mel.eval("InsertKey;")
     
@@ -1575,7 +1685,26 @@ class FloatingTools(QtWidgets.QWidget):
 
     def delete_keys(self):
         mel.eval('''timeSliderClearKey;''')
-#----------------------------------------------------------------------------------------------------------------
+
+    #---------------------------------------------------------------------------------------------------------------
+    def mute_all(self):
+        mel.eval('channelBoxCommand -muteall;')
+    
+    @undoable
+    def unMute_all(self):
+        mel.eval('channelBoxCommand -unmuteall;')
+
+    def mute_selected(self):
+        mel.eval('channelBoxCommand -mute;')
+    
+    def unMute_selected(self):
+        mel.eval('channelBoxCommand -unmute;')
+
+    def break_connections(self):
+        mel.eval('channelBoxCommand -break;')
+
+    #---------------------------------------------------------------------------------------------------------------
+    #----------------------------------------------------------------------------------------------------------------
     def set_graph_key(self):
         mel.eval("setKeyframe -breakdown 0 -preserveCurveShape 1 -hierarchy none -controlPoints 0 -shape 0;")
 
@@ -1654,6 +1783,7 @@ def show_floating_tool():
     floating_tool_widget.move(1280, 700)
     floating_tool_widget.show()
     maya_main_window()._floating_tool_widget = floating_tool_widget
+    maya_main_window().activateWindow()
 
 show_floating_tool()
 """
